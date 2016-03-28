@@ -9,7 +9,8 @@ var userSchema = new Schema({
   password: { type: String, select: false },
   displayName: String,
   username: {type: String, unique: true},  // TODO #12
-  picture: String
+  picture: String,
+  posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }]
 });
 
 userSchema.pre('save', function (next) {

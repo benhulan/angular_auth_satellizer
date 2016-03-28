@@ -110,6 +110,7 @@ function MainController (Account) {
 
 }
 
+
 HomeController.$inject = ["$http"]; // minification protection
 function HomeController ($http) {
   var vm = this;
@@ -120,8 +121,14 @@ function HomeController ($http) {
     .then(function (response) {
       vm.posts = response.data;
     });
-
-    // vm.createPost   -- TODO #???
+  //  vm.createPost   // TODO #15
+  vm.createPost = function() {
+    $http.post('/api/posts', vm.new_post)
+      .then(function (response) {
+        vm.new_post = {};
+        vm.posts.push(response.data);
+      });
+  };
 }
 
 LoginController.$inject = ["$location", "Account"]; // minification protection

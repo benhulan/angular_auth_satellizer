@@ -24,6 +24,7 @@ mongoose.connect('mongodb://localhost/angular_auth');
 
 // require User and Post models
 var User = require('./models/user');
+var Post = require('./models/post');
 
 /*
  * API Routes
@@ -44,22 +45,34 @@ app.put('/api/me', auth.ensureAuthenticated, function (req, res) {
     user.username = req.body.username || user.username;
     user.email = req.body.email || user.email;
     user.save(function(err) {
-      res.send(user);
+      res.send(user.populate('posts'));
     });
   });
 });
 
 app.get('/api/posts', function (req, res) {
-  res.json([
-  {
-    title: "Hardcoded Title",
-    content: "Here is some great hardcoded content for the body of a blog post. Happy coding!"
-  },
-  {
-    title: "Another Post",
-    content: "MEAN stack is the best stack."
-  }
-  ]);
+  Post.find(function (err, allPosts) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.json(allPosts);
+    }
+  });
+});
+
+app.post('/api/posts', auth.ensureAuthenticated, function (req, res) {
+  User.findById(req.user, function (err, user) {
+    var newPost = new Post(req.body);
+    newPost.save(function (err, savedPost) {
+      if (err) {
+        res.status(500).json({ error: err.message });
+      } else {
+        user.posts.push(newPost);
+        user.save();
+        res.json(savedPost);
+      }
+    });
+  });
 });
 
 
