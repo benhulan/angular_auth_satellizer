@@ -8,7 +8,6 @@ var userSchema = new Schema({
   email: { type: String, unique: true, lowercase: true },
   password: { type: String, select: false },
   displayName: String,
-  google: String,
   username: {type: String, unique: true},  // TODO #12
   picture: String,
   posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }]
